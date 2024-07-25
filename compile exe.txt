@@ -1,0 +1,1 @@
+pyinstaller --noconsole python_script_name.py # no console
