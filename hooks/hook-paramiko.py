@@ -1,0 +1,4 @@
+# hooks/hook-paramiko.py
+from PyInstaller.utils.hooks import collect_all
+
+datas, binaries, hiddenimports = collect_all('paramiko')
