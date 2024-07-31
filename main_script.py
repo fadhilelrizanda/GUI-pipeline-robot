@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import scrolledtext
 from PIL import Image, ImageTk
@@ -8,14 +9,11 @@ from dotenv import load_dotenv
 from threading import Thread
 import command
 import io
-import platform
-import subprocess
-import asyncio
 import threading
-import multiprocessing
 from multiprocessing import Process, Queue
 import time
-
+import utils
+import multiprocessing
 # Load environment
 load_dotenv()
 
@@ -36,6 +34,7 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 def check_status():
+    global connection_status_text
     log_console("Checking Status ....")
     loading_message = show_loading_message()
     con_status = picommand.check_connection()
@@ -50,7 +49,7 @@ def check_status():
     print(batt_status)
     log_console(f"Connection Status : {con_status}")
     log_console(f"Battery Status : {batt_status}")
-    update_status(con_status, batt_status)
+    utils.update_status(connection_status_text,con_status, batt_status)
     loading_message.destroy()
 
 
@@ -115,12 +114,12 @@ def update_video_image():
 
 
 def run_motor_trig():
-    global Ttl_distance
+    global Ttl_distance,total_distance
     loading_message = show_loading_message()
     check_val = int(sp_motor.get())
     check_motor_type = radio_var.get()
     Ttl_distance += check_val
-    update_distance(Ttl_distance)
+    utils.update_distance(total_distance, Ttl_distance)
     print(check_motor_type)
     queue = Queue()
     p = Process(target=picommand.motor_run_command,
@@ -172,24 +171,6 @@ def log_console(message):
     console_text.configure(state='disabled')
     console_text.yview(tk.END)
 
-
-def update_status(con_stat, bat_stat):
-    status = (f"Connection status: {con_stat}\n"
-              f"Battery condition: {bat_stat}\n")
-    connection_status_text.config(state=tk.NORMAL)
-    connection_status_text.delete(1.0, tk.END)
-    connection_status_text.insert(tk.END, status)
-    connection_status_text.config(state=tk.DISABLED)
-
-
-def update_distance(total_distance_cm):
-    status = (f"Total Distance: {total_distance_cm} cm \n")
-    total_distance.config(state=tk.NORMAL)
-    total_distance.delete(1.0, tk.END)
-    total_distance.insert(tk.END, status)
-    total_distance.config(state=tk.DISABLED)
-
-
 def show_loading_message():
     loading_message = tk.Label(
         root, text="Please wait, processing...", font=("Arial", 16), fg="red")
@@ -197,62 +178,9 @@ def show_loading_message():
     root.update_idletasks()
     return loading_message
 
-
-def shutdown_trig():
-    loading_message = show_loading_message()
-    queue = Queue()
-    p = Process(target=picommand.shutdown, args=(queue,))
-
-    def wait_for_process():
-        p.start()
-        log_console("Shutdown...")
-        p.join()
-        result = queue.get()
-        log_console(result)
-        loading_message.destroy()
-
-    Thread(target=wait_for_process).start()
-
-
-def reboot_trig():
-    loading_message = show_loading_message()
-    queue = Queue()
-    p = Process(target=picommand.reboot, args=(queue,))
-
-    def wait_for_process():
-        p.start()
-        log_console("Rebooting...")
-        p.join()
-        result = queue.get()
-        log_console(result)
-        loading_message.destroy()
-
-    Thread(target=wait_for_process).start()
-
-
 def send_command_servo(command):
     global client_socket
     client_socket.send(command.encode('utf-8'))
-
-
-def on_key_press(event):
-    global keybind_stat
-    if keybind_stat:
-        key = event.keysym
-        if key == 'Left':
-            send_command_servo('LEFT')
-            log_console("Left arrow")
-        elif key == 'Right':
-            send_command_servo('RIGHT')
-            log_console("Right arrow")
-        elif key == 'Up':
-            send_command_servo('UP')
-            log_console("Up arrow")
-        elif key == 'Down':
-            send_command_servo('DOWN')
-            log_console("Down arrow")
-        print(key)
-
 
 def start_servo_server_trig():
     global client_socket, keybind_stat
@@ -284,8 +212,10 @@ def start_servo_server_trig():
     Thread(target=wait_for_process).start()
 
 
+
+
 def main():
-    global root, label, total_distance, console_text, sp_motor, radio_var, camera_left_right_scale, camera_up_down_scale, con_status, connection_status_text
+    global root,connection_status_text, label, total_distance, console_text, sp_motor, radio_var, camera_left_right_scale, camera_up_down_scale, con_status, connection_status_text
 
     root = tk.Tk()
 
@@ -303,6 +233,7 @@ def main():
         root, highlightbackground="green", highlightthickness=2)
     video_section.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
+    # Status Section
     status_title = tk.Label(video_section, text="Robot Status",
                             highlightbackground="blue", highlightthickness=2)
     status_title.pack(side=tk.TOP)
@@ -325,13 +256,14 @@ def main():
     btn_check_con.grid(column=0, row=0)
 
     btn_shutdown = tk.Button(
-        btn_status_frame, text="Shutdown", command=shutdown_trig)
+        btn_status_frame, text="Shutdown", command=lambda:utils.shutdown_trig(show_loading_message,log_console))
     btn_shutdown.grid(column=1, row=0)
 
     btn_reboot = tk.Button(
-        btn_status_frame, text="Reboot", command=reboot_trig)
+        btn_status_frame, text="Reboot", command=lambda:utils.reboot_trig(show_loading_message,log_console))
     btn_reboot.grid(column=2, row=0)
 
+    # Video Section
     label = tk.Label(video_section, highlightbackground="orange",
                      highlightthickness=2, image=default_photo_image)
     label.pack(side=tk.TOP)
@@ -340,6 +272,7 @@ def main():
         video_section, highlightbackground="blue", highlightthickness=2)
     stream_section.pack()
 
+    # Button Stream Section
     btn_start_stream = tk.Button(
         stream_section, text="Start Stream", command=start_stream)
     btn_start_stream.grid(column=0, row=0)
@@ -356,6 +289,8 @@ def main():
         stream_section, text="Start Servo Stream", command=start_servo_server_trig)
     btn_start_servo_stream.grid(column=4, row=0)
 
+
+    # Control Section
     control_frame = tk.Frame(
         root, highlightbackground="red", highlightthickness=2)
     control_frame.pack(pady=20)
@@ -372,6 +307,7 @@ def main():
                              highlightbackground="blue", highlightthickness=2)
     title_control.grid(column=0, row=1, columnspan=3)
 
+    # Distance Section
     motor_distance_frame = tk.Frame(
         control_frame, highlightbackground="blue", highlightthickness=7)
     motor_distance_frame.grid(column=0, row=2)
@@ -398,16 +334,21 @@ def main():
                               text="Run Motor", command=run_motor_trig)
     btn_run_motor.grid(column=2, row=1)
 
+
+    # Camera Up down Section
     servo_frame = tk.Frame(
         control_frame, highlightbackground="blue", highlightthickness=2)
     servo_frame.grid(column=2, row=2)
-    servo_frame.bind("<KeyPress>", on_key_press)
+    servo_frame.bind("<KeyPress>", lambda event: utils.on_key_press(event, keybind_stat,send_command_servo,log_console))
     servo_frame.focus_set()
 
-    camera_up_down_scale = tk.Scale(
-        servo_frame, label="Degree", orient="vertical", from_=0, to=180)
+    camera_up_down_scale = tk.Scale(servo_frame, label="Degree", orient="vertical", from_=0, to=180)
     camera_up_down_scale.grid(column=1, row=2, rowspan=2)
 
+    btn_set_focus = tk.Button(servo_frame, text="Set Focus", command=lambda:utils.set_focus_frame_trig(servo_frame))
+    btn_set_focus.grid(column =3, row = 2)
+
+    
     btn_camera_up = tk.Button(
         servo_frame, text="Camera Up/Down", command=run_motor_up_down)
     btn_camera_up.grid(column=2, row=2, rowspan=2, padx=20)
@@ -420,6 +361,7 @@ def main():
         servo_frame, text="Camera Left/Right", command=run_motor_left_right)
     btn_camera_left.grid(column=2, row=4, rowspan=2, padx=20)
 
+    # Console Section
     console_text = scrolledtext.ScrolledText(root, height=10)
     console_text.pack(fill="x", padx=10, pady=10)
     console_text.configure(state='disabled')
@@ -428,4 +370,7 @@ def main():
 
 
 if __name__ == '__main__':
+  
+    multiprocessing.set_start_method('spawn')  # Add this line
+    multiprocessing.freeze_support()
     main()

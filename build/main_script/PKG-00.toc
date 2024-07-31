@@ -1,0 +1,88 @@
+('D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+ 'Robot Desktop\\build\\main_script\\main_script.pkg',
+ {'BINARY': True,
+  'DATA': True,
+  'EXECUTABLE': True,
+  'EXTENSION': True,
+  'PYMODULE': True,
+  'PYSOURCE': True,
+  'PYZ': False,
+  'SPLASH': True,
+  'SYMLINK': False},
+ [('pyi-contents-directory _internal', '', 'OPTION'),
+  ('PYZ-00.pyz',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\build\\main_script\\PYZ-00.pyz',
+   'PYZ'),
+  ('struct',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\build\\main_script\\localpycs\\struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\build\\main_script\\localpycs\\pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\build\\main_script\\localpycs\\pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\build\\main_script\\localpycs\\pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyimod04_pywin32',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\build\\main_script\\localpycs\\pyimod04_pywin32.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('pyi_rth_multiprocessing',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_multiprocessing.py',
+   'PYSOURCE'),
+  ('pyi_rth_pkgutil',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
+   'PYSOURCE'),
+  ('pyi_rth_cryptography_openssl',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\hooks\\rthooks\\pyi_rth_cryptography_openssl.py',
+   'PYSOURCE'),
+  ('pyi_rth_pkgres',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgres.py',
+   'PYSOURCE'),
+  ('pyi_rth_setuptools',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_setuptools.py',
+   'PYSOURCE'),
+  ('pyi_rth__tkinter',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth__tkinter.py',
+   'PYSOURCE'),
+  ('main_script',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\main_script.py',
+   'PYSOURCE')],
+ 'python311.dll',
+ True,
+ False,
+ False,
+ [],
+ None,
+ None,
+ None)
