@@ -12,6 +12,7 @@ class Picommand:
     def ssh_command(self, command):
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        print(f"{self.port} {self.username} {self.password} {self.raspberry_ip} ")
 
         try:
             client.connect(self.hostname, port=self.port,
@@ -98,6 +99,13 @@ class Picommand:
         command = f"python /home/robot/code/raspberry-pipe-code/motor_servo.py --d {angle} --s {servo}"
         return command
 
+    def reset_servo(self, queue):
+        command1 = f"python /home/robot/code/raspberry-pipe-code/motor_servo.py --d {90} --s {1}"
+        output, error = self.ssh_command(command1)
+        command2 = f"python /home/robot/code/raspberry-pipe-code/motor_servo.py --d {90} --s {1}"
+        output, error = self.ssh_command(command2)
+        return output
+
     def start_stream(self, queue):
         command = f"python /home/robot/code/raspberry-pipe-code/stream.py"
         output, error = self.ssh_command(command)
@@ -106,7 +114,23 @@ class Picommand:
         queue.put(output)
 
     def start_stream_servo(self, queue):
-        command = f"python /home/robot/code/raspberry-pipe-code/stream.py"
+        command = f"python /home/robot/code/raspberry-pipe-code/servo_server.py"
+        output, error = self.ssh_command(command)
+        if error:
+            output = f"Error : {error}"
+        queue.put(output)
+
+    def start_stream_motor(self, queue):
+        command = f"python /home/robot/code/raspberry-pipe-code/motor_server.py"
+        output, error = self.ssh_command(command)
+        if error:
+            result = f"Error : {error}"
+        else:
+            result = "Motor Stream Started"
+        queue.put(result)
+
+    def kill_active_port(self, queue, port_num):
+        command = f"kill -9 $(lsof -t -i tcp:{port_num})"
         output, error = self.ssh_command(command)
         if error:
             output = f"Error : {error}"
