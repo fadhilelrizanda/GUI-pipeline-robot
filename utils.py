@@ -36,22 +36,26 @@ def change_current_distance(val):
 
 
 def check_status(log_console, show_loading_message, update_status, connection_status_text):
-    log_console("Checking Status ....")
-    loading_message = show_loading_message()
-    con_status = picommand.check_connection()
-    print(con_status)
-    if con_status:
-        con_status = "ON"
-    else:
-        con_status = "OFF"
-    batt_status = picommand.check_voltage()
-    if batt_status == "throttled=0x0":
-        batt_status = "Normal"
-    print(batt_status)
-    log_console(f"Connection Status : {con_status}")
-    log_console(f"Battery Status : {batt_status}")
-    update_status(con_status, batt_status)
-    loading_message.destroy()
+    def run_check():
+        log_console("Checking Status ....")
+        loading_message = show_loading_message()
+        con_status = picommand.check_connection()
+        print(con_status)
+        if con_status:
+            con_status = "ON"
+        else:
+            con_status = "OFF"
+        batt_status = picommand.check_voltage()
+        if batt_status == "throttled=0x0":
+            batt_status = "Normal"
+        print(batt_status)
+        log_console(f"Connection Status : {con_status}")
+        log_console(f"Battery Status : {batt_status}")
+        update_status(con_status, batt_status)
+        loading_message.destroy()
+
+    # Run the check in a separate thread
+    Thread(target=run_check).start()
 
 
 def reboot_trig(show_loading_message, log_console):
@@ -118,6 +122,9 @@ def update_video_image(log_console, label):
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         out = None  # Initialize the video writer as None
 
+        # Generate a unique filename using the current timestamp
+        filename = time.strftime("./videos/stream_record_%Y%m%d_%H%M%S.avi")
+
     global stream_status, current_distance
     while stream_status:
         try:
@@ -133,7 +140,6 @@ def update_video_image(log_console, label):
             cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
             # Add current time overlay
-            # current_time = time.strftime('%Y-%m-%d %H:%M:%S')
             cv2.putText(cv_image, f"Jarak : {current_distance}", (10, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 87, 51), 2, cv2.LINE_AA)
 
@@ -159,8 +165,7 @@ def update_video_image(log_console, label):
                 if out is None:
                     width, height = image.size
                     out = cv2.VideoWriter(
-                        'stream_record.avi', fourcc, fps, (width, height)
-                    )
+                        filename, fourcc, fps, (width, height))
 
                 out.write(cv_image)  # Write frame to video file
 

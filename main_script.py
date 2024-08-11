@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import psutil
 import tkinter as tk
 from tkinter import scrolledtext
 from PIL import Image, ImageTk
@@ -8,7 +9,7 @@ from threading import Thread
 import command
 import io
 import threading
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, active_children
 import time
 import utils
 import multiprocessing
@@ -113,6 +114,29 @@ def remove_focus_frame_trig(root):
     root.focus_set()
 
 
+def shutdown_processes():
+    """Terminate all running child processes and exit the application."""
+    log_console("Shutting down processes...")
+
+    # Attempt to terminate processes
+    for proc in psutil.process_iter(attrs=['pid', 'name']):
+        if proc.info['name'] == 'python' and proc.pid != os.getpid():
+            log_console(f"Terminating process {proc.pid}")
+            try:
+                proc.terminate()
+                proc.wait(timeout=5)
+            except psutil.TimeoutExpired:
+                log_console(f"Process {proc.pid} did not terminate in time")
+                proc.kill()
+
+        # Exit the Tkinter main loop
+    root.quit()
+    root.destroy()
+
+    # Exit the Python interpreter
+    os._exit(0)  # Forcefully exit the Python interpreter
+
+
 def main():
     global root, space_1, camera_server, servo_server, motor_server, connection_status_text, server_status, label, total_distance, console_text, sp_motor, radio_var, camera_left_right_scale, camera_up_down_scale, con_status, connection_status_text
 
@@ -200,11 +224,11 @@ def main():
     server_status.config(state=tk.DISABLED)
     server_status.grid(row=1, column=1, pady=5)
 
-    total_distance = tk.Text(control_frame, height=2,
-                             width=30, font=(main_font, 10))
-    total_distance.grid(row=1, column=0)
-    total_distance.insert(tk.END, f"Total Distance : {Ttl_distance} cm")
-    total_distance.config(state=tk.DISABLED)
+    # total_distance = tk.Text(control_frame, height=2,
+    #                          width=30, font=(main_font, 10))
+    # total_distance.grid(row=1, column=0)
+    # total_distance.insert(tk.END, f"Total Distance : {Ttl_distance} cm")
+    # total_distance.config(state=tk.DISABLED)
 
     frame_start_server = tk.Frame(
         control_frame, bg=color1)
@@ -227,15 +251,15 @@ def main():
     frame_kill_server.grid(column=0, row=3, columnspan=3)
 
     btn_kill_camera = tk.Button(frame_kill_server,
-                                text="Kill Server Camera", command=lambda: utils.kill_server(0, show_loading_message, log_console, change_server_stat), bg=r_color, padx=5, pady=5, fg="#FFE8C5", borderwidth=1, highlightthickness=0, font=(main_font, 10))
+                                text="Stop Server Camera", command=lambda: utils.kill_server(0, show_loading_message, log_console, change_server_stat), bg=r_color, padx=5, pady=5, fg="#FFE8C5", borderwidth=1, highlightthickness=0, font=(main_font, 10))
     btn_kill_camera.grid(column=0, row=0, padx=5)
 
     btn_kill_servo = tk.Button(frame_kill_server,
-                               text="Kill Server Servo", command=lambda: utils.kill_server(1, show_loading_message, log_console, change_server_stat), bg=r_color, padx=5, pady=5, fg="#FFE8C5", borderwidth=1, highlightthickness=0, font=(main_font, 10))
+                               text="Stop Server Servo", command=lambda: utils.kill_server(1, show_loading_message, log_console, change_server_stat), bg=r_color, padx=5, pady=5, fg="#FFE8C5", borderwidth=1, highlightthickness=0, font=(main_font, 10))
     btn_kill_servo.grid(column=1, row=0, padx=5)
 
     btn_kill_motor = tk.Button(frame_kill_server,
-                               text="Kill Server Motor",  command=lambda: utils.kill_server(2, show_loading_message, log_console, change_server_stat), bg=r_color, padx=5, pady=5, fg="#FFE8C5", borderwidth=1, highlightthickness=0, font=(main_font, 10))
+                               text="Stop Server Motor",  command=lambda: utils.kill_server(2, show_loading_message, log_console, change_server_stat), bg=r_color, padx=5, pady=5, fg="#FFE8C5", borderwidth=1, highlightthickness=0, font=(main_font, 10))
     btn_kill_motor.grid(column=2, row=0, padx=5)
 
     # Center the buttons in the frame
@@ -283,39 +307,42 @@ def main():
                               command=lambda: set_focus_frame_trig(keybind_frame))
     btn_set_focus.grid(column=0, row=0, padx=10, pady=10)
 
-    btn_set_unfocus = tk.Button(keybind_frame, text="Disable Keybind",
+    btn_set_unfocus = tk.Button(keybind_frame, text="Deactivate Keybind",
                                 command=lambda: remove_focus_frame_trig(root))
     btn_set_unfocus.grid(column=1, row=0)
 
     # Camera Up down Section
-    servo_frame = tk.Frame(
-        control_frame, highlightbackground="blue", highlightthickness=2)
-    servo_frame.grid(column=0, row=5)
-    camera_up_down_scale = tk.Scale(
-        servo_frame, label="Degree", orient="vertical", from_=0, to=180)
-    camera_up_down_scale.grid(column=1, row=2, rowspan=2)
+    # servo_frame = tk.Frame(
+    #     control_frame, highlightbackground="blue", highlightthickness=2)
+    # servo_frame.grid(column=0, row=5)
+    # camera_up_down_scale = tk.Scale(
+    #     servo_frame, label="Degree", orient="vertical", from_=0, to=180)
+    # # camera_up_down_scale.grid(column=1, row=2, rowspan=2)
 
-    btn_camera_up = tk.Button(
-        servo_frame, text="Camera Up/Down", command=lambda: utils.run_motor_up_down(camera_up_down_scale, log_console))
-    btn_camera_up.grid(column=2, row=2, rowspan=2, padx=20)
+    # btn_camera_up = tk.Button(
+    #     servo_frame, text="Camera Up/Down", command=lambda: utils.run_motor_up_down(camera_up_down_scale, log_console))
+    # btn_camera_up.grid(column=2, row=2, rowspan=2, padx=20)
 
-    camera_left_right_scale = tk.Scale(
-        servo_frame, label="Degree", orient="horizontal", from_=0, to=180)
-    camera_left_right_scale.grid(column=1, row=4, rowspan=2)
+    # camera_left_right_scale = tk.Scale(
+    #     servo_frame, label="Degree", orient="horizontal", from_=0, to=180)
+    # camera_left_right_scale.grid(column=1, row=4, rowspan=2)
 
-    btn_camera_left = tk.Button(
-        servo_frame, text="Camera Left/Right", command=utils.run_motor_left_right)
-    btn_camera_left.grid(column=2, row=4, rowspan=2, padx=20)
+    # btn_camera_left = tk.Button(
+    #     servo_frame, text="Camera Left/Right", command=utils.run_motor_left_right)
+    # btn_camera_left.grid(column=2, row=4, rowspan=2, padx=20)
 
-    btn_reset_servo = tk.Button(
-        servo_frame, text="Reset Servo", command=lambda: utils.reset_servo_trig(log_console))
-    btn_reset_servo.grid(column=3, row=4, rowspan=2, padx=20)
+    # btn_reset_servo = tk.Button(
+    #     servo_frame, text="Reset Servo", command=lambda: utils.reset_servo_trig(log_console))
+    # btn_reset_servo.grid(column=3, row=4, rowspan=2, padx=20)
 
     # Console Section
     console_text = scrolledtext.ScrolledText(root, height=10)
     console_text.pack(fill="x", padx=10, pady=10)
     console_text.configure(state='disabled')
     update_status_server()
+
+    # Binding the window close event
+    root.protocol("WM_DELETE_WINDOW", shutdown_processes)
     root.mainloop()
 
 
