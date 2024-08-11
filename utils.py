@@ -9,6 +9,8 @@ import struct
 import io
 import socket
 import time
+import cv2
+import numpy as np
 # Load environment
 load_dotenv()
 
@@ -24,6 +26,13 @@ picommand = command.Picommand(
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Define Variable
 stream_status = False
+recording_status = False  # Added variable to track recording status
+current_distance = 0
+
+
+def change_current_distance(val):
+    global current_distance
+    current_distance = val
 
 
 def check_status(log_console, show_loading_message, update_status, connection_status_text):
@@ -77,20 +86,23 @@ def shutdown_trig(show_loading_message, log_console):
     Thread(target=wait_for_process).start()
 
 
-def start_stream(log_console, tk_image):
-    global stream_status
+def start_stream(log_console, tk_image, record=True):
+    global stream_status, recording_status
     stream_status = True
+    recording_status = record  # Set recording status based on the parameter
+
     if stream_status:
         Thread(target=update_video_image, args=(log_console, tk_image)).start()
 
 
 def stop_stream():
-    global stream_status
+    global stream_status, recording_status
     stream_status = False
+    recording_status = False  # Stop recording when streaming stops
 
 
 def update_video_image(log_console, label):
-    global raspberry_ip
+    global raspberry_ip, recording_status
     raspi_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -101,7 +113,12 @@ def update_video_image(log_console, label):
         log_console(f"Error : \n  {e}")
         return  # Exit the function if the connection fails
 
-    global stream_status
+    if recording_status:
+        first_frame_time = None
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = None  # Initialize the video writer as None
+
+    global stream_status, current_distance
     while stream_status:
         try:
             image_len = struct.unpack(
@@ -112,15 +129,49 @@ def update_video_image(log_console, label):
             image_data = connection.read(image_len)
             image = Image.open(io.BytesIO(image_data))
 
-            tk_image = ImageTk.PhotoImage(image)
+            # Convert PIL image to OpenCV format
+            cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
 
+            # Add current time overlay
+            # current_time = time.strftime('%Y-%m-%d %H:%M:%S')
+            cv2.putText(cv_image, f"Jarak : {current_distance}", (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 87, 51), 2, cv2.LINE_AA)
+
+            # Convert back to PIL Image to display in Tkinter
+            image_with_time = Image.fromarray(
+                cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB))
+            tk_image = ImageTk.PhotoImage(image_with_time)
             label.config(image=tk_image)
             label.image = tk_image
+
+            if recording_status:
+                current_time = time.time()
+
+                if first_frame_time is None:
+                    first_frame_time = current_time
+                    frame_interval = 1.0 / 10.0  # Default to 20 FPS
+                else:
+                    frame_interval = current_time - first_frame_time
+                    first_frame_time = current_time
+
+                fps = 1.0 / frame_interval
+
+                if out is None:
+                    width, height = image.size
+                    out = cv2.VideoWriter(
+                        'stream_record.avi', fourcc, fps, (width, height)
+                    )
+
+                out.write(cv_image)  # Write frame to video file
+
         except Exception as e:
             log_console(f"Error : \n  {e}")
             break
 
         time.sleep(0.05)
+
+    if recording_status:
+        out.release()  # Release the video file when streaming stops
 
 
 def robot_start_stream_trig(show_loading_message, log_console, change_server_stat):
@@ -306,5 +357,11 @@ def on_key_press(event, keybind_stat, keybind_motor, log_console):
         elif key == 's':
             send_command_motor_server('BACKWARD')
             log_console("BACKWARD")
+        elif key == 'a':
+            send_command_motor_server('A')
+            log_console("LEFT")
+        elif key == 'd':
+            send_command_motor_server('D')
+            log_console("RIGHT")
 
         print(key)

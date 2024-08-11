@@ -12,6 +12,7 @@ from multiprocessing import Process, Queue
 import time
 import utils
 import multiprocessing
+import numpy as np
 # Load environment
 load_dotenv()
 
@@ -251,14 +252,14 @@ def main():
                               highlightbackground="blue", highlightthickness=2)
     title_distance.grid(column=0, row=0)
 
-    radio_var = tk.IntVar()
-    radio_motor_type_A = tk.Radiobutton(
-        motor_distance_frame, text="Default feet", variable=radio_var, value=1)
-    radio_motor_type_A.grid(column=0, row=1)
-    radio_motor_type_B = tk.Radiobutton(
-        motor_distance_frame, text="Extended feet", variable=radio_var, value=2)
-    radio_motor_type_B.grid(column=1, row=1)
-    radio_motor_type_A.select()
+    # radio_var = tk.IntVar()
+    # radio_motor_type_A = tk.Radiobutton(
+    #     motor_distance_frame, text="Default feet", variable=radio_var, value=1)
+    # radio_motor_type_A.grid(column=0, row=1)
+    # radio_motor_type_B = tk.Radiobutton(
+    #     motor_distance_frame, text="Extended feet", variable=radio_var, value=2)
+    # radio_motor_type_B.grid(column=1, row=1)
+    # radio_motor_type_A.select()
 
     sp_motor = tk.Spinbox(motor_distance_frame, from_=-1000, to=1000)
     sp_motor.grid(column=1, row=2, rowspan=2)
@@ -266,7 +267,7 @@ def main():
     sp_motor.insert(0, "0")
 
     btn_run_motor = tk.Button(motor_distance_frame,
-                              text="Run Motor", command=utils.run_motor_trig)
+                              text="Run Motor", command=lambda: utils.change_current_distance(sp_motor.get()))
     btn_run_motor.grid(column=2, row=1)
 
     # Keybind Control

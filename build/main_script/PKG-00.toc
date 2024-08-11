@@ -44,15 +44,15 @@
    'Robot '
    'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
    'PYSOURCE'),
-  ('pyi_rth_multiprocessing',
-   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
-   'Robot '
-   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_multiprocessing.py',
-   'PYSOURCE'),
   ('pyi_rth_pkgutil',
    'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
    'Robot '
    'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
+   'PYSOURCE'),
+  ('pyi_rth_multiprocessing',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot '
+   'Desktop\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_multiprocessing.py',
    'PYSOURCE'),
   ('pyi_rth_cryptography_openssl',
    'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
