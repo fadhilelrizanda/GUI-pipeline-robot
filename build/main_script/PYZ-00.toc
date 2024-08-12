@@ -2087,6 +2087,22 @@
   ('platform', 'C:\\Python311\\Lib\\platform.py', 'PYMODULE'),
   ('plistlib', 'C:\\Python311\\Lib\\plistlib.py', 'PYMODULE'),
   ('pprint', 'C:\\Python311\\Lib\\pprint.py', 'PYMODULE'),
+  ('psutil',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\venv\\Lib\\site-packages\\psutil\\__init__.py',
+   'PYMODULE'),
+  ('psutil._common',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\venv\\Lib\\site-packages\\psutil\\_common.py',
+   'PYMODULE'),
+  ('psutil._compat',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\venv\\Lib\\site-packages\\psutil\\_compat.py',
+   'PYMODULE'),
+  ('psutil._pswindows',
+   'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
+   'Robot Desktop\\venv\\Lib\\site-packages\\psutil\\_pswindows.py',
+   'PYMODULE'),
   ('py_compile', 'C:\\Python311\\Lib\\py_compile.py', 'PYMODULE'),
   ('pycparser',
    'D:\\Programs\\VSC code\\3. Projek IoT\\6. Projek Robot Inspection\\6. GUI '
