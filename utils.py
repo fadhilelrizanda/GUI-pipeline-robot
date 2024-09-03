@@ -51,7 +51,7 @@ def check_status(log_console, show_loading_message, update_status, connection_st
         print(batt_status)
         log_console(f"Connection Status : {con_status}")
         log_console(f"Battery Status : {batt_status}")
-        update_status(con_status, batt_status)
+        update_status(con_status)
         loading_message.destroy()
 
     # Run the check in a separate thread

@@ -78,8 +78,7 @@ def log_console(message):
 
 def update_status(con_stat, bat_stat):
     global connection_status_text
-    status = (f"Connection status: {con_stat}\n"
-              f"Battery condition: {bat_stat}\n")
+    status = (f"Connection status: {con_stat}\n")
     connection_status_text.config(state=tk.NORMAL)
     connection_status_text.delete(1.0, tk.END)
     connection_status_text.insert(tk.END, status)
@@ -164,7 +163,6 @@ def main():
 
     default_text = (
         "Connection status  : unchecked\n"
-        "Battery condition   : unchecked\n"
     )
     connection_status_text = tk.Text(
         video_section, height=2, width=52, bg=color4)
